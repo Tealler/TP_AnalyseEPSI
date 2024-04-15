@@ -1,0 +1,355 @@
+import dependencies.Dependencies
+import org.jetbrains.annotations.Nullable
+
+buildscript {
+    repositories {
+        jcenter()
+        maven { url 'https://maven.fabric.io/public' }
+        maven { url "https://jitpack.io" }
+        maven { url 'https://oss.sonatype.org/content/repositories/snapshots' }
+        maven { url "https://maven.google.com" }
+        mavenCentral()
+    }
+    dependencies {
+        classpath Dependencies.Plugins.android
+        classpath Dependencies.Plugins.dexcount
+        classpath Dependencies.Plugins.fabric
+    }
+}
+
+
+plugins {
+    id("com.android.application")
+    id("kotlin-android")
+    id("kotlin-android-extensions")
+    id("kotlin-kapt")
+    id("com.github.triplet.play") version "2.1.0"
+}
+
+apply plugin: Dependencies.BuildPlugins.dexCount
+apply plugin: Dependencies.BuildPlugins.fabric
+
+repositories {
+    maven { url 'https://maven.fabric.io/public' }
+    maven { url "https://jitpack.io" }
+    maven { url 'http://oss.sonatype.org/content/repositories/snapshots' }
+    mavenCentral()
+}
+
+@Nullable
+def getProperties(String fileName) {
+    final Properties properties = new Properties()
+    def file = file(fileName)
+    if (file.exists()) {
+        file.withInputStream { stream -> properties.load(stream) }
+    }
+    return properties
+}
+
+static def getProperty(@Nullable Properties properties, String name) {
+    return properties.getProperty(name) ?: "$name missing"
+}
+
+android {
+    dexOptions {
+        jumboMode = true
+    }
+
+    compileSdkVersion Dependencies.compileSdk
+
+    defaultConfig {
+        minSdkVersion Dependencies.minSdk
+        targetSdkVersion Dependencies.targetSdk
+
+        versionName Config.versionName
+        versionCode 5000
+
+        resConfigs "en", "zh-rCN", "fr", "de", "ko", "it", "ru", "nl", "tr", "pl", "ro", "hu", "hi-rIN", "uk", "bg-rBG", "en-rGB", "et-rEE", "vi", "pt-rBR", "es", "en-rNZ", "zh-rTW", "es-rES", "ca", "hr", "en-rAU", "eu-rES", "th", "ja"
+
+        renderscriptTargetApi 23
+
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+
+        // This API key is provided for convenience. Please go to https://www.last.fm/api/account/create and create your own.
+        buildConfigField("String", "LASTFM_API_KEY", "\"${getProperty(getProperties('../public.properties'), 'LASTFM_API_KEY')}\"")
+
+        manifestPlaceholders = [CRASHLYTICS_API_KEY: "dummy-key"]
+    }
+
+    signingConfigs {
+        release {
+            Properties properties = getProperties('../keystore.properties')
+            storeFile file(getProperty(properties, 'store'))
+            keyAlias getProperty(properties, 'alias')
+            storePassword getProperty(properties, 'storePass')
+            keyPassword getProperty(properties, 'pass')
+        }
+    }
+
+    buildTypes {
+
+        debug {
+            applicationIdSuffix ".debug"
+            ext.enableCrashlytics = false
+        }
+
+        release {
+
+            minifyEnabled true
+            shrinkResources true
+
+            // For further optimisation, use 'proguard-android-optimize.txt' instead of 'proguard-android.txt'.
+            // Last time I checked, it reduced by another ~5000 methods.
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), file('proguard-rules.pro')
+            signingConfig signingConfigs.release
+
+            buildConfigField("String", "LASTFM_API_KEY", "\"${getProperty(getProperties('../private.properties'), 'LASTFM_API_KEY')}\"")
+            manifestPlaceholders = [CRASHLYTICS_API_KEY: "${getProperty(getProperties('../private.properties'), 'CRASHLYTICS_API_KEY')}"]
+        }
+    }
+
+    // Ignore useless variants, such as devRelease.
+    variantFilter { variant ->
+
+        def names = variant.flavors*.name
+        def buildTypes = variant.buildType*.name
+
+        def debugFilters = ["paid", "free", 'amazonPaid', "amazonFree"]
+        def relFilters = ["dev"]
+
+        if (System.getenv("TRAVIS")) {
+            relFilters << "dev"
+            relFilters << "amazonPaid"
+            relFilters << "amazonFree"
+        }
+
+        def filter = { name -> names.contains(name) }
+        def debugIgnore = buildTypes.contains("debug") && debugFilters.stream().anyMatch(filter)
+        def releaseIgnore = buildTypes.contains("release") && relFilters.stream().anyMatch(filter)
+
+        setIgnore(debugIgnore || releaseIgnore)
+    }
+
+    // Set the version code for release builds
+    applicationVariants.all { variant ->
+        if (variant.buildType.name == "release") {
+            def newVersionCode = generateVersionCode()
+            variant.outputs.all { output ->
+                output.setVersionCodeOverride(newVersionCode)
+            }
+        }
+    }
+
+    // Used to enable Java8 features
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    flavorDimensions "all"
+
+    productFlavors {
+
+        dev {
+            dimension "all"
+
+            applicationId "com.simplecity.amp_pro"
+
+            resConfigs "en", "xxhdpi"
+        }
+
+        paid {
+            dimension "all"
+            applicationId "com.simplecity.amp_pro"
+        }
+
+        free {
+            dimension "all"
+            applicationId "another.music.player"
+        }
+
+        amazonPaid {
+            dimension "all"
+            applicationId "com.simplecity.amp_pro"
+        }
+
+        amazonFree {
+            dimension "all"
+            applicationId "another.music.player"
+        }
+    }
+
+    sourceSets {
+        main.aidl.srcDirs = ['src/main/java']
+
+        dev.res.srcDirs = ['src/paid/res']
+        dev.java.srcDirs = ['src/paid/java']
+
+        paid.res.srcDirs = ['src/paid/res']
+        paid.java.srcDirs = ['src/paid/java']
+
+        free.manifest.srcFile 'src/free/AndroidManifest.xml'
+        free.res.srcDirs = ['src/free/res']
+        free.java.srcDirs = ['src/free/java']
+
+        amazonPaid.res.srcDirs = ['src/paid/res']
+        amazonPaid.java.srcDirs = ['src/paid/java']
+
+        amazonFree.res.srcDirs = ['src/free/res']
+        amazonFree.java.srcDirs = ['src/free/java']
+    }
+
+    lintOptions {
+        ignore 'ExtraTranslation', 'MissingTranslation'
+        abortOnError false
+    }
+
+    packagingOptions {
+        exclude 'META-INF/rxjava.properties'
+    }
+}
+
+dependencies {
+
+    implementation fileTree(include: '*.jar', dir: 'libs')
+
+    // Kotlin
+    implementation Dependencies.kotlin
+//    implementation Dependencies.ktx
+
+    // Google libs
+    implementation Dependencies.Google.cardView
+    implementation Dependencies.Google.design
+    implementation Dependencies.Google.palette
+    implementation Dependencies.Google.prefCompat
+    implementation Dependencies.Google.prefCompatv14
+    implementation Dependencies.Google.recyclerView
+    implementation Dependencies.Google.supportv4
+    implementation Dependencies.Google.firebaseCore
+    implementation Dependencies.Google.firebaseRemoteConfig
+    implementation Dependencies.Google.constraintLayout
+    implementation Dependencies.Google.chromeCastFramework
+
+    // Square libs
+    implementation Dependencies.Square.okio
+    implementation Dependencies.Square.okhttp
+    implementation Dependencies.Square.retrofit
+    implementation Dependencies.Square.retrofitGson
+    implementation Dependencies.Square.sqlBrite
+    debugImplementation Dependencies.Square.haha
+    debugImplementation Dependencies.Square.leakCanaryDebug
+    releaseImplementation Dependencies.Square.leakCanaryRel
+
+    // Projects
+    implementation project(Dependencies.Projects.navigation)
+    implementation project(Dependencies.Projects.recyclerAdapter)
+    implementation project(Dependencies.Projects.multiSheetView)
+    implementation project(Dependencies.Projects.glidePalette)
+    implementation project(Dependencies.Projects.aesthetic)
+
+    // Rx
+    implementation Dependencies.Rx.rxAndroid
+    implementation Dependencies.Rx.rxBinding
+    implementation Dependencies.Rx.rxBindingAppCompat
+    implementation Dependencies.Rx.rxImagePicker
+    implementation Dependencies.Rx.rxJava
+    implementation Dependencies.Rx.rxRelay
+    implementation Dependencies.Rx.rxBroadcast
+    implementation Dependencies.Rx.rxPrefs
+    implementation Dependencies.Rx.rxKotlin
+    implementation Dependencies.Rx.rxDogTag
+
+    // External libs
+    implementation Dependencies.nanoHttp
+    implementation Dependencies.dashClockApi
+    implementation Dependencies.fastScroll
+    implementation Dependencies.glide
+    implementation Dependencies.glideOkhttp
+    implementation Dependencies.permiso
+    implementation Dependencies.streams
+    implementation Dependencies.materialDialogs
+    implementation Dependencies.materialDialogCommons
+    implementation Dependencies.expandableRecyclerView
+    implementation Dependencies.billing
+
+    implementation Dependencies.butterknife
+    kapt Dependencies.butterknifeAnnotationProcessor
+
+    implementation Dependencies.dagger
+    implementation Dependencies.daggerSupport
+    kapt Dependencies.daggerCompiler
+    kapt Dependencies.daggerProcessor
+
+    compileOnly Dependencies.daggerAssistedInject
+    kapt Dependencies.daggerAssistedInjectProcessor
+
+    implementation(Dependencies.crashlytics) {
+        transitive = true
+    }
+
+    // Testing
+    testImplementation Dependencies.Testing.junit
+    testImplementation Dependencies.Testing.mockito
+    testImplementation Dependencies.Testing.powermock
+    testImplementation Dependencies.Testing.powermockjunit
+    testImplementation Dependencies.Testing.robolectric
+    testImplementation Dependencies.Testing.assertj
+    androidTestImplementation(Dependencies.Testing.espresso) {
+        exclude group: 'com.android.support', module: 'support-annotations'
+    }
+}
+
+configurations.all {
+    resolutionStrategy {
+        eachDependency { details ->
+            // Force all of the primary support libraries to use the same version.
+            if (details.requested.group == 'com.android.support'
+                    && details.requested.name != 'multidex'
+                    && details.requested.name != 'multidex-instrumentation') {
+                details.useVersion Dependencies.Google.Versions.supportLib
+            }
+        }
+    }
+}
+
+class Globals {
+    static int versionCode = -1
+}
+
+static int generateVersionCode() {
+    if (Globals.versionCode == -1) {
+        def versionCode = 5000
+        if (System.getenv("TRAVIS_BUILD_NUMBER")) {
+            def travisBuildNumber = System.getenv("TRAVIS_BUILD_NUMBER").toInteger()
+            println "Travis build number: $travisBuildNumber"
+            versionCode += travisBuildNumber
+        }
+        println "Version code: $versionCode"
+        Globals.versionCode = versionCode
+        return versionCode
+    }
+    return Globals.versionCode
+}
+
+static String getPlayStoreTrack() {
+    def track = 'alpha'
+    if (System.getenv("TRAVIS_TAG")) {
+        String branch = System.getenv("TRAVIS_TAG").toString()
+        if (branch.contains('alpha')) {
+            track = 'alpha'
+        } else if (branch.contains('beta')) {
+            track = 'beta'
+        } else if (branch.contains('release')) {
+            track = 'production'
+        }
+    }
+    println "Play store track: $track"
+    return track
+}
+
+play {
+    track = getPlayStoreTrack()
+    serviceAccountCredentials = file('../deployment_keys.json')
+}
+
+apply plugin: Dependencies.BuildPlugins.playServices

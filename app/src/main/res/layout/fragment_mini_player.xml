@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/frameLayout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="?android:windowBackground"
+    android:elevation="4dp"
+    android:foreground="?attr/list_selector"
+    tools:layout_height="48dp">
+
+    <ImageView
+        android:id="@+id/artworkImageView"
+        android:layout_width="36dp"
+        android:layout_height="36dp"
+        android:layout_marginStart="8dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@id/progressbar"
+        tools:src="@color/white"/>
+
+    <TextView
+        android:id="@+id/titleTextView"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:ellipsize="end"
+        android:gravity="center_vertical"
+        android:lines="1"
+        android:tag=":aesthetic_ignore"
+        android:textColor="?android:textColorSecondary"
+        android:textSize="14sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/mini_play"
+        app:layout_constraintStart_toEndOf="@+id/artworkImageView"
+        app:layout_constraintTop_toTopOf="@id/progressbar"
+        tools:text="Artist - Album"/>
+
+    <com.simplecity.amp_library.ui.views.PlayPauseView
+        android:id="@+id/mini_play"
+        android:layout_width="44dp"
+        android:layout_height="44dp"
+        android:layout_marginEnd="16dp"
+        android:background="?attr/circular_ripple"
+        android:contentDescription="@string/btn_play"
+        android:scaleX="0.8"
+        android:scaleY="0.8"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"/>
+
+    <me.zhanghai.android.materialprogressbar.MaterialProgressBar
+        android:id="@+id/progressbar"
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:background="#20000000"
+        android:indeterminate="false"
+        app:mpb_progressStyle="horizontal"
+        app:mpb_showProgressBackground="false"
+        app:mpb_useIntrinsicPadding="false"
+        tools:progress="50"
+        style="@style/Widget.MaterialProgressBar.ProgressBar.Horizontal"/>
+
+</android.support.constraint.ConstraintLayout>

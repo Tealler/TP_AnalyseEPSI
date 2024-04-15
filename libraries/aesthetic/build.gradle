@@ -1,0 +1,56 @@
+import dependencies.Dependencies
+
+apply plugin: Dependencies.BuildPlugins.androidLibrary
+
+android {
+    compileSdkVersion Dependencies.compileSdk
+
+    defaultConfig {
+        minSdkVersion Dependencies.minSdk
+        targetSdkVersion Dependencies.compileSdk
+        versionCode 19
+        versionName '0.4.7'
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+    sourceSets {
+        main.res.srcDirs = [
+                'src/main/res',
+                'src/main/res-public'
+        ]
+    }
+}
+
+dependencies {
+    repositories {
+        google()
+    }
+
+    implementation Dependencies.Google.appcompat
+    implementation Dependencies.Google.cardView
+
+    implementation Dependencies.Google.design
+    implementation Dependencies.Google.recyclerView
+
+    implementation Dependencies.Rx.rxJava
+    implementation Dependencies.Rx.rxAndroid
+    implementation 'com.f2prateek.rx.preferences2:rx-preferences:2.0.0-RC3'
+    implementation 'me.zhanghai.android.materialprogressbar:library:1.4.2'
+}
+
+configurations.all {
+    resolutionStrategy {
+        eachDependency { details ->
+            // Force all of the primary support libraries to use the same version.
+            if (details.requested.group == 'com.android.support'
+                && details.requested.name != 'multidex'
+                && details.requested.name != 'multidex-instrumentation') {
+                details.useVersion Dependencies.Google.Versions.supportLib
+            }
+        }
+    }
+}

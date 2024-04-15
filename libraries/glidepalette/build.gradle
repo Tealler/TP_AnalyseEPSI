@@ -1,0 +1,25 @@
+import dependencies.Dependencies
+
+apply plugin: Dependencies.BuildPlugins.androidLibrary
+
+android {
+    compileSdkVersion Dependencies.compileSdk
+
+    defaultConfig {
+        minSdkVersion Dependencies.minSdk
+        targetSdkVersion Dependencies.targetSdk
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+}
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation Dependencies.Google.palette
+    implementation Dependencies.Google.supportv4
+    implementation Dependencies.glide
+}
