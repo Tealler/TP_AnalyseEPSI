@@ -5,7 +5,7 @@ import android.graphics.Bitmap;
 public class BitmapAndSize {
 
     private Bitmap bitmap;
-    public Size size;
+    private Size size;
 
     public BitmapAndSize(Bitmap bitmap, Size size) {
         this.bitmap = bitmap;
