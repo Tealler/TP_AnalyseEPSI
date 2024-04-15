@@ -96,7 +96,6 @@ public abstract class BaseFragment extends BaseController {
             // Attempt to get the resource ID of the next animation that
             // will be applied to the given fragment.
             Field nextAnimField = Fragment.class.getDeclaredField("mNextAnim");
-            nextAnimField.setAccessible(true);
             int nextAnimResource = nextAnimField.getInt(fragment);
             Animation nextAnim = AnimationUtils.loadAnimation(fragment.getActivity(), nextAnimResource);
 
