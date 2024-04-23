@@ -93,9 +93,9 @@ public class HttpServer {
 
                     Map<String, String> headers = session.getHeaders();
                     String range = null;
-                    for (String key : headers.keySet()) {
-                        if ("range".equals(key)) {
-                            range = headers.get(key);
+                    for (Map.Entry<String, String> entry : headers.entrySet()) {
+                        if ("range".equals(entry.getKey())) {
+                            range = entry.getValue();
                         }
                     }
 
@@ -126,7 +126,8 @@ public class HttpServer {
                         long contentLength = end - start + 1;
                         cleanupAudioStream();
                         audioInputStream = new FileInputStream(file);
-                        audioInputStream.skip(start);
+                        long skippedBytes = audioInputStream.skip(start);
+                        System.out.println("Skipped " + skippedBytes + " bytes");
                         Response response = newFixedLengthResponse(Response.Status.PARTIAL_CONTENT, getMimeType(audioFileToServe), audioInputStream, contentLength);
                         response.addHeader("Content-Length", contentLength + "");
                         response.addHeader("Content-Range", "bytes " + start + "-" + end + "/" + fileLength);
@@ -171,34 +172,38 @@ public class HttpServer {
         }
     }
 
-    private final Map<String, String> MIME_TYPES = new HashMap<String, String>() {{
-        put("css", "text/css");
-        put("htm", "text/html");
-        put("html", "text/html");
-        put("xml", "text/xml");
-        put("java", "text/x-java-source, text/java");
-        put("md", "text/plain");
-        put("txt", "text/plain");
-        put("asc", "text/plain");
-        put("gif", "image/gif");
-        put("jpg", "image/jpeg");
-        put("jpeg", "image/jpeg");
-        put("png", "image/png");
-        put("mp3", "audio/mpeg");
-        put("m3u", "audio/mpeg-url");
-        put("mp4", "video/mp4");
-        put("ogv", "video/ogg");
-        put("flv", "video/x-flv");
-        put("mov", "video/quicktime");
-        put("swf", "application/x-shockwave-flash");
-        put("js", "application/javascript");
-        put("pdf", "application/pdf");
-        put("doc", "application/msword");
-        put("ogg", "application/x-ogg");
-        put("zip", "application/octet-stream");
-        put("exe", "application/octet-stream");
-        put("class", "application/octet-stream");
-    }};
+    private final Map<String, String> MIME_TYPES = createMimeTypesMap();
+
+    private Map<String, String> createMimeTypesMap() {
+        Map<String, String> mimeTypes = new HashMap<>();
+        mimeTypes.put("css", "text/css");
+        mimeTypes.put("htm", "text/html");
+        mimeTypes.put("html", "text/html");
+        mimeTypes.put("xml", "text/xml");
+        mimeTypes.put("java", "text/x-java-source, text/java");
+        mimeTypes.put("md", "text/plain");
+        mimeTypes.put("txt", "text/plain");
+        mimeTypes.put("asc", "text/plain");
+        mimeTypes.put("gif", "image/gif");
+        mimeTypes.put("jpg", "image/jpeg");
+        mimeTypes.put("jpeg", "image/jpeg");
+        mimeTypes.put("png", "image/png");
+        mimeTypes.put("mp3", "audio/mpeg");
+        mimeTypes.put("m3u", "audio/mpeg-url");
+        mimeTypes.put("mp4", "video/mp4");
+        mimeTypes.put("ogv", "video/ogg");
+        mimeTypes.put("flv", "video/x-flv");
+        mimeTypes.put("mov", "video/quicktime");
+        mimeTypes.put("swf", "application/x-shockwave-flash");
+        mimeTypes.put("js", "application/javascript");
+        mimeTypes.put("pdf", "application/pdf");
+        mimeTypes.put("doc", "application/msword");
+        mimeTypes.put("ogg", "application/x-ogg");
+        mimeTypes.put("zip", "application/octet-stream");
+        mimeTypes.put("exe", "application/octet-stream");
+        mimeTypes.put("class", "application/octet-stream");
+        return mimeTypes;
+    }
 
     String getMimeType(String filePath) {
         return MIME_TYPES.get(filePath.substring(filePath.lastIndexOf(".") + 1));

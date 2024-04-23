@@ -256,25 +256,29 @@ public class EqualizerFragment extends BaseFragment implements
                 @Override
                 public void onProgressChanged(final SeekBar seekBar, final int progress, final boolean fromUser) {
 
-                    if (fromUser) {
-                        //Determine which band changed
-                        int seekbarId = seekBar.getId();
-                        int band = 0;
-                        for (int i = 0; i < eqViewElementIds.length; i++) {
-                            if (eqViewElementIds[i][1] == seekbarId) {
-                                band = i;
-                            }
+                if (fromUser) {
+                    // Determine which band changed
+                    int seekbarId = seekBar.getId();
+                    int band = 0;
+                    int foundIndex = -1; // Track the index where the condition is met
+                    for (int i = 0; i < eqViewElementIds.length; i++) {
+                        if (eqViewElementIds[i][1] == seekbarId) {
+                            foundIndex = i; // Store the index where the condition is met
+                            break; // Exit the loop once the condition is met
                         }
+                    }
+                    if (foundIndex != -1) {
+                        band = foundIndex; // Assign the found index to band
+                    }
 
-                        if (eqPreset != eqCustomPresetPosition) {
-                            equalizerCopyToCustom();
-                            if (spinnerAdapter != null && spinnerAdapter.getCount() > eqCustomPresetPosition) {
-                                spinner.setSelection(eqCustomPresetPosition);
-                            }
-                        } else {
-                            int level = getBandLevelRange()[0] + (progress * 100);
-                            equalizerBandUpdate(band, level);
+                    if (eqPreset != eqCustomPresetPosition) {
+                        equalizerCopyToCustom();
+                        if (spinnerAdapter != null && spinnerAdapter.getCount() > eqCustomPresetPosition) {
+                            spinner.setSelection(eqCustomPresetPosition);
                         }
+                    } else {
+                        int level = getBandLevelRange()[0] + (progress * 100);
+                        equalizerBandUpdate(band, level);
                     }
                 }
 

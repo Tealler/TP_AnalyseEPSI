@@ -59,9 +59,12 @@ public class Equalizer {
         context.unregisterReceiver(mAudioSessionReceiver);
     }
 
+    import java.util.Objects;
+import java.util.stream.Stream;
+
     public void releaseEffects() {
         Stream.of(mAudioSessions.values())
-                .filter(effectSet -> effectSet != null)
+                .filter(Objects::nonNull)
                 .forEach(EffectSet::release);
     }
 

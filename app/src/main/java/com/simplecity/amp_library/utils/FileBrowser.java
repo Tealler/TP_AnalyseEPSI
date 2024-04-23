@@ -66,11 +66,7 @@ public class FileBrowser {
                                 ((FolderObject) baseFileObject).fileCount++;
                             }
                         }
-                    } else {
-                        continue;
-                    }
-                    if (!folderObjects.contains(baseFileObject)) {
-                        folderObjects.add(baseFileObject);
+                        folderObjects.add(baseFileObject); // Move the addition outside of the inner loop
                     }
                 } else {
                     baseFileObject = new FileObject();
@@ -78,16 +74,13 @@ public class FileBrowser {
                     baseFileObject.name = FileHelper.getName(file.getName());
                     baseFileObject.size = file.length();
                     ((FileObject) baseFileObject).extension = FileHelper.getExtension(file.getName());
-                    if (TextUtils.isEmpty(((FileObject) baseFileObject).extension)) {
-                        continue;
-                    }
-                    ((FileObject) baseFileObject).tagInfo = new TagInfo(baseFileObject.path);
-
-                    if (!fileObjects.contains(baseFileObject)) {
-                        fileObjects.add(baseFileObject);
+                    if (!TextUtils.isEmpty(((FileObject) baseFileObject).extension)) {
+                        ((FileObject) baseFileObject).tagInfo = new TagInfo(baseFileObject.path);
+                        fileObjects.add(baseFileObject); // Move the addition outside of the inner if block
                     }
                 }
             }
+
         }
 
         sortFileObjects(fileObjects);
@@ -107,7 +100,7 @@ public class FileBrowser {
             FolderObject parentObject = new FolderObject();
             parentObject.fileType = FileType.PARENT;
             parentObject.name = FileHelper.PARENT_DIRECTORY;
-            parentObject.path = FileHelper.getPath(currentDir) + "/" + FileHelper.PARENT_DIRECTORY;
+            parentObject.path = FileHelper.getPath(currentDir) + FileHelper.PARENT_DIRECTORY;
             folderObjects.add(0, parentObject);
         }
 

@@ -173,23 +173,23 @@ public class TaggerUtils {
         }
 
         if (!destFile.exists()) {
-            destFile.createNewFile();
+            boolean fileCreated = destFile.createNewFile();
+            if (fileCreated) {
+                System.out.println("File created successfully: " + destFile.getAbsolutePath());
+            } else {
+                System.out.println("Failed to create file: " + destFile.getAbsolutePath());
+            }
         }
+
 
         FileChannel source = null;
         FileChannel destination = null;
 
-        try {
-            source = new FileInputStream(sourceFile).getChannel();
-            destination = new FileOutputStream(destFile).getChannel();
+        try (FileChannel source = new FileInputStream(sourceFile).getChannel();
+             FileChannel destination = new FileOutputStream(destFile).getChannel()) {
             destination.transferFrom(source, 0, source.size());
-        } finally {
-            if (source != null) {
-                source.close();
-            }
-            if (destination != null) {
-                destination.close();
-            }
+        } catch (IOException e) {
+            e.printStackTrace(); // Example: Print the stack trace for debugging
         }
     }
 
@@ -198,18 +198,15 @@ public class TaggerUtils {
         FileChannel source = null;
         FileChannel destination = null;
 
-        try {
-            source = new FileInputStream(sourceFile).getChannel();
-            destination = outputStream.getChannel();
-            destination.transferFrom(source, 0, source.size());
-        } finally {
-            if (source != null) {
-                source.close();
-            }
-            if (destination != null) {
-                destination.close();
-            }
+        try (FileInputStream source = new FileInputStream(sourceFile);
+             FileChannel sourceChannel = source.getChannel();
+             FileChannel destinationChannel = outputStream.getChannel()) {
+            destinationChannel.transferFrom(sourceChannel, 0, sourceChannel.size());
+        } catch (IOException e) {
+            // Handle the exception
+            e.printStackTrace(); // or log the exception
         }
+
     }
 
     static void showChooseDocumentDialog(Context context, MaterialDialog.SingleButtonCallback listener, boolean hasChecked) {

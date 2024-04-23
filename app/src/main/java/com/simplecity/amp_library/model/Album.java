@@ -35,7 +35,7 @@ public class Album implements
     public long lastPlayed;
     public long dateAdded;
 
-    public List<String> paths = new ArrayList<>();
+    private List<String> paths = new ArrayList<>();
 
     public int songPlayCount;
 
@@ -213,7 +213,7 @@ public class Album implements
         try {
             return "https://artwork.shuttlemusicplayer.app/api/v1/artwork"
                     + "?artist=" + URLEncoder.encode(albumArtistName, Charset.forName("UTF-8").name())
-                    + "&album=" + URLEncoder.encode(name, Charset.forName("UTF-8").name());
+                    + "&album=" + URLEncoder.encode(name, StandardCharsets.UTF_8.name());
         } catch (UnsupportedEncodingException e) {
             return null;
         }

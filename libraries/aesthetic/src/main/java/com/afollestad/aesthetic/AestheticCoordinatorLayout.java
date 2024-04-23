@@ -116,8 +116,7 @@ public class AestheticCoordinatorLayout extends CoordinatorLayout
           View child = collapsingToolbarLayout.getChildAt(i);
           if (child instanceof AestheticToolbar) {
             this.toolbar = (AestheticToolbar) child;
-          } else if (child.getBackground() != null
-              && child.getBackground() instanceof ColorDrawable) {
+          } else if (child.getBackground() instanceof ColorDrawable) {
             this.colorView = child;
           }
         }

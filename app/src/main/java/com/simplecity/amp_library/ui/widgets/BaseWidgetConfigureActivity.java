@@ -291,7 +291,7 @@ public abstract class BaseWidgetConfigureActivity extends BaseActivity implement
 
         @Override
         public CharSequence getPageTitle(int position) {
-            return "Layout " + String.valueOf(position + 1);
+            return "Layout " + (position + 1);
         }
 
         @Override

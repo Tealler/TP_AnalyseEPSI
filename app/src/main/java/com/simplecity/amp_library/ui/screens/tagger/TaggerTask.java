@@ -19,6 +19,7 @@ import org.jaudiotagger.audio.exceptions.InvalidAudioFrameException;
 import org.jaudiotagger.audio.exceptions.ReadOnlyFileException;
 import org.jaudiotagger.tag.Tag;
 import org.jaudiotagger.tag.TagException;
+import java.nio.file.Files;
 
 public class TaggerTask extends AsyncTask<Object, Integer, Boolean> {
 
@@ -100,7 +101,7 @@ public class TaggerTask extends AsyncTask<Object, Integer, Boolean> {
                 AudioFile audioFile = AudioFileIO.read(orig);
                 Tag tag = audioFile.getTag();
                 if (tag == null) {
-                    break;
+                    continue; // Skip to the next iteration if tag is null
                 }
 
                 TagUpdate tagUpdate = new TagUpdate(tag);
@@ -134,7 +135,7 @@ public class TaggerTask extends AsyncTask<Object, Integer, Boolean> {
                         audioFile = AudioFileIO.read(temp);
                         tag = audioFile.getTag();
                         if (tag == null) {
-                            break;
+                            continue; // Skip to the next iteration if tag is null
                         }
                     }
 
@@ -150,7 +151,7 @@ public class TaggerTask extends AsyncTask<Object, Integer, Boolean> {
                                 TaggerUtils.copyFile(temp, fileOutputStream);
                                 pfd.close();
                             }
-                            if (temp.delete()) {
+                            if (Files.delete(temp)) {
                                 tempFiles.remove(temp);
                             }
                         }
@@ -164,16 +165,20 @@ public class TaggerTask extends AsyncTask<Object, Integer, Boolean> {
             }
         }
 
+
         cleanUpTempFiles();
         return success;
     }
 
     private void cleanUpTempFiles() {
         if (tempFiles != null && !tempFiles.isEmpty()) {
-            for (File file : tempFiles) {
-                file.delete();
+            Iterator<File> iterator = tempFiles.iterator();
+            while (iterator.hasNext()) {
+                File file = iterator.next();
+                if (file.delete()) {
+                    iterator.remove(); // Remove the file from the list if deletion is successful
+                }
             }
-            tempFiles.clear();
         }
     }
 

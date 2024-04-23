@@ -338,7 +338,7 @@ public class FileHelper {
     /**
      * An array of accepted/supported audio extensions.
      */
-    public static String[] sExtensions = new String[] {
+    protected static String[] sExtensions = new String[] {
             "mp3", "3gp", "mp4", "m4a",
             "aac", "ts", "flac", "mid",
             "xmf", "mxmf", "midi", "rtttl",

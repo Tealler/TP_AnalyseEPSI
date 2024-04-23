@@ -32,6 +32,7 @@ import dagger.android.AndroidInjection;
 import dagger.android.AndroidInjector;
 import dagger.android.DispatchingAndroidInjector;
 import dagger.android.support.HasSupportFragmentInjector;
+
 import java.util.List;
 import javax.inject.Inject;
 
@@ -150,9 +151,10 @@ public abstract class BaseActivity extends AestheticActivity implements
                     getLifecycle(),
                     this,
                     analyticsManager,
-                    this, serviceToken -> {
+                    this,
+                    serviceToken -> {
                         token = serviceToken;
-                        this.bindInFlight = false;
+                        bindInFlight = false;
                     }
             );
         }

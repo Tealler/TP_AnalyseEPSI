@@ -11,7 +11,7 @@ public abstract class BaseViewHolder<VM extends ViewModel> extends RecyclerView.
 
     protected VM viewModel;
 
-    public BaseViewHolder(View itemView) {
+    protected BaseViewHolder(View itemView) {
         super(itemView);
     }
 

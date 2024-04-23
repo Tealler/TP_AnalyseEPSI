@@ -221,7 +221,7 @@ public class MainActivity extends BaseActivity implements
             if (id >= 0) {
                 Query query = Playlist.getQuery();
                 query.uri = ContentUris.withAppendedId(query.uri, id);
-                SqlBriteUtils.createSingle(this, (cursor) -> new Playlist(this, cursor), query, null)
+                SqlBriteUtils.createSingle(this, cursor -> new Playlist(this, cursor), query, null)
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(

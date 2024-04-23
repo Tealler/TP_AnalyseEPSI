@@ -230,6 +230,14 @@ public class ColorHelper {
 
         private static final ThreadLocal<double[]> TEMP_ARRAY = new ThreadLocal<>();
 
+        static double[] removeTempArray() {
+            double[] result = TEMP_ARRAY.get();
+            if (result == null) {
+                result = TEMP_ARRAY.remove();
+            }
+            return result;
+        }
+
         private ColorUtilsFromCompat() {}
 
         /**

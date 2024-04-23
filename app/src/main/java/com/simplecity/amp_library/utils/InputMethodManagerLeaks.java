@@ -82,14 +82,16 @@ public class InputMethodManagerLeaks {
             }
         }
 
-        private void synchronizedInputMethodManagerLock(Object lock) throws IllegalAccessException, InvocationTargetException {
-            synchronized (lock) {
-                View servedView = (View) mServedViewField.get(inputMethodManager);
-                if (servedView != null) {
-                    handleServedView(servedView);
+            private final Object synchronizationLock = new Object();
+
+            private void synchronizedInputMethodManagerLock() throws IllegalAccessException, InvocationTargetException {
+                synchronized (synchronizationLock) {
+                    View servedView = (View) mServedViewField.get(inputMethodManager);
+                    if (servedView != null) {
+                        handleServedView(servedView);
+                    }
                 }
             }
-        }
 
         private void handleServedView(View servedView) throws IllegalAccessException, InvocationTargetException {
             boolean servedViewAttached = servedView.getWindowVisibility() != View.GONE;

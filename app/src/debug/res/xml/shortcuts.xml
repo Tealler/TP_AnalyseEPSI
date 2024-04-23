@@ -52,22 +52,5 @@
             android:targetClass="com.simplecity.amp_library.ui.screens.shortcut.ShortcutTrampolineActivity"
             android:targetPackage="com.simplecity.amp_pro.debug"/>
     </shortcut>
-
-    <!--<shortcut-->
-        <!--android:enabled="true"-->
-        <!--android:icon="@drawable/shortcut_playlist"-->
-        <!--android:shortcutDisabledMessage="@string/shortcut_playlist_disabled"-->
-        <!--android:shortcutId="playlist"-->
-        <!--android:shortcutLongLabel="@string/shortcut_playlist_long_label"-->
-        <!--android:shortcutShortLabel="@string/shortcut_playlist_short_label"-->
-        <!--app:shortcutDisabledMessage="@string/shortcut_playlist_disabled"-->
-        <!--app:shortcutId="playlist"-->
-        <!--app:shortcutLongLabel="@string/shortcut_playlist_long_label"-->
-        <!--app:shortcutShortLabel="@string/shortcut_playlist_short_label">-->
-        <!--<intent-->
-            <!--android:action="com.simplecity.amp_library.shortcuts.PLAYLIST"-->
-            <!--android:targetClass="com.simplecity.amp_library.ui.screens.shortcut.ShortcutTrampolineActivity"-->
-            <!--android:targetPackage="com.simplecity.amp_pro.debug"/>-->
-    <!--</shortcut>-->
    
 </shortcuts>

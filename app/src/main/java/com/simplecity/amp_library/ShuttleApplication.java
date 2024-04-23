@@ -371,22 +371,8 @@ public class ShuttleApplication extends DaggerApplication {
                         }
 
                 ).toList()
-                .doOnSuccess(contentProviderOperations -> {
-                    getContentResolver().applyBatch(MediaStore.AUTHORITY, new ArrayList<>(contentProviderOperations));
-                })
+                .doOnSuccess(contentProviderOperations ->
+                    getContentResolver().applyBatch(MediaStore.AUTHORITY, new ArrayList<>(contentProviderOperations)))
                 .flatMapCompletable(songs -> Completable.complete());
-    }
-
-    private void enableStrictMode() {
-        StrictMode.setVmPolicy(new StrictMode.VmPolicy.Builder()
-                .detectAll()
-                .penaltyLog()
-                .build());
-
-        StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder()
-                .detectAll()
-                .penaltyLog()
-                .penaltyFlashScreen()
-                .build());
     }
 }

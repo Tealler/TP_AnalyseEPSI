@@ -1232,10 +1232,6 @@ public class CustomCollapsingToolbarLayout extends FrameLayout {
                 final ViewOffsetHelper offsetHelper = getViewOffsetHelper(child);
 
                 switch (lp.mCollapseMode) {
-                    default:
-                        offsetHelper.setTopAndBottomOffset(
-                                MathUtils.clamp(-verticalOffset, 0, getMaxOffsetForPinChild(child)));
-                        break;
                     case LayoutParams.COLLAPSE_MODE_PIN:
                         offsetHelper.setTopAndBottomOffset(
                                 MathUtils.clamp(-verticalOffset, 0, getMaxOffsetForPinChild(child)));
@@ -1243,6 +1239,10 @@ public class CustomCollapsingToolbarLayout extends FrameLayout {
                     case LayoutParams.COLLAPSE_MODE_PARALLAX:
                         offsetHelper.setTopAndBottomOffset(
                                 Math.round(-verticalOffset * lp.mParallaxMult));
+                        break;
+                    default:
+                        offsetHelper.setTopAndBottomOffset(
+                                MathUtils.clamp(-verticalOffset, 0, getMaxOffsetForPinChild(child)));
                         break;
 
                 }

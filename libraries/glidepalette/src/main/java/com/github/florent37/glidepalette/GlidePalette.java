@@ -9,9 +9,9 @@ import com.bumptech.glide.load.resource.bitmap.GlideBitmapDrawable;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
 
-public class GlidePalette<ModelType, TranscodeType> extends BitmapPalette implements RequestListener<ModelType, TranscodeType> {
+public class GlidePalette<ModelType, T> extends BitmapPalette implements RequestListener<ModelType, T> {
 
-    protected RequestListener<ModelType, TranscodeType> callback;
+    protected RequestListener<ModelType, T> callback;
 
     protected GlidePalette() {
     }
@@ -27,68 +27,68 @@ public class GlidePalette<ModelType, TranscodeType> extends BitmapPalette implem
         return this;
     }
 
-    public GlidePalette<ModelType, TranscodeType> intoBackground(View view) {
+    public GlidePalette<ModelType, T> intoBackground(View view) {
         return this.intoBackground(view, Swatch.RGB);
     }
 
     @Override
-    public GlidePalette<ModelType, TranscodeType> intoBackground(View view, @Swatch int paletteSwatch) {
+    public GlidePalette<ModelType, T> intoBackground(View view, @Swatch int paletteSwatch) {
         super.intoBackground(view, paletteSwatch);
         return this;
     }
 
-    public GlidePalette<ModelType, TranscodeType> intoTextColor(TextView textView) {
+    public GlidePalette<ModelType, T> intoTextColor(TextView textView) {
         return this.intoTextColor(textView, Swatch.TITLE_TEXT_COLOR);
     }
 
     @Override
-    public GlidePalette<ModelType, TranscodeType> intoTextColor(TextView textView, @Swatch int paletteSwatch) {
+    public GlidePalette<ModelType, T> intoTextColor(TextView textView, @Swatch int paletteSwatch) {
         super.intoTextColor(textView, paletteSwatch);
         return this;
     }
 
     @Override
-    public GlidePalette<ModelType, TranscodeType> crossfade(boolean crossfade) {
+    public GlidePalette<ModelType, T> crossfade(boolean crossfade) {
         super.crossfade(crossfade);
         return this;
     }
 
     @Override
-    public GlidePalette<ModelType, TranscodeType> crossfade(boolean crossfade, int crossfadeSpeed) {
+    public GlidePalette<ModelType, T> crossfade(boolean crossfade, int crossfadeSpeed) {
         super.crossfade(crossfade, crossfadeSpeed);
         return this;
     }
 
-    public GlidePalette<ModelType, TranscodeType> setGlideListener(RequestListener<ModelType, TranscodeType> listener) {
+    public GlidePalette<ModelType, T> setGlideListener(RequestListener<ModelType, T> listener) {
         this.callback = listener;
         return this;
     }
 
     @Override
-    public GlidePalette<ModelType, TranscodeType> intoCallBack(GlidePalette.CallBack callBack) {
+    public GlidePalette<ModelType, T> intoCallBack(GlidePalette.CallBack callBack) {
         super.intoCallBack(callBack);
         return this;
     }
 
     @Override
-    public GlidePalette<ModelType, TranscodeType> setPaletteBuilderInterceptor(PaletteBuilderInterceptor interceptor) {
+    public GlidePalette<ModelType, T> setPaletteBuilderInterceptor(PaletteBuilderInterceptor interceptor) {
         super.setPaletteBuilderInterceptor(interceptor);
         return this;
     }
 
     @Override
-    public GlidePalette<ModelType, TranscodeType> skipPaletteCache(boolean skipCache) {
+    public GlidePalette<ModelType, T> skipPaletteCache(boolean skipCache) {
         super.skipPaletteCache(skipCache);
         return this;
     }
 
     @Override
-    public boolean onException(Exception e, ModelType model, Target<TranscodeType> target, boolean isFirstResource) {
+    public boolean onException(Exception e, ModelType model, Target<T> target, boolean isFirstResource) {
         return this.callback != null && this.callback.onException(e, model, target, isFirstResource);
     }
 
     @Override
-    public boolean onResourceReady(TranscodeType resource, ModelType model, Target<TranscodeType> target, boolean isFromMemoryCache, boolean isFirstResource) {
+    public boolean onResourceReady(T resource, ModelType model, Target<T> target, boolean isFromMemoryCache, boolean isFirstResource) {
         boolean callbackResult = this.callback != null && this.callback.onResourceReady(resource, model, target, isFromMemoryCache, isFirstResource);
 
         Bitmap b = null;
