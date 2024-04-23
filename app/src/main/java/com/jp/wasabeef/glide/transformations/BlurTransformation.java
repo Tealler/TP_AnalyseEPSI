@@ -32,8 +32,8 @@ import com.jp.wasabeef.glide.transformations.internal.RSBlur;
 
 public class BlurTransformation implements Transformation<Bitmap> {
 
-    private static int MAX_RADIUS = 25;
-    private static int DEFAULT_DOWN_SAMPLING = 1;
+    private static int maxRadius = 25;
+    private static int defaultDownSampling = 1;
 
     private Context mContext;
     private BitmapPool mBitmapPool;

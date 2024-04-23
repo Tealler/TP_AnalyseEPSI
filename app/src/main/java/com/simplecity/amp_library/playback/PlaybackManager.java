@@ -55,8 +55,6 @@ public class PlaybackManager implements Playback.Callbacks {
 
     private SettingsManager settingsManager;
 
-    private boolean playOnQueueReload = false;
-
     @NonNull
     Playback playback;
 
@@ -131,6 +129,7 @@ public class PlaybackManager implements Playback.Callbacks {
     }
 
     void reloadQueue() {
+        boolean playOnQueueReload = false;
         if (ContextCompat.checkSelfPermission(context, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
             return;
         }
@@ -499,6 +498,7 @@ public class PlaybackManager implements Playback.Callbacks {
     }
 
     public void play() {
+        boolean playOnQueueReload = false;
         if (settingsManager.getEqualizerEnabled()) {
             //Shutdown any existing external audio sessions
             equalizer.closeEqualizerSessions(false, getAudioSessionId());

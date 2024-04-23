@@ -195,7 +195,7 @@ public abstract class MainActivityModule {
 
     @FragmentScope
     @ContributesAndroidInjector(modules = DialogFragmentModule.class)
-    abstract UpgradeNagDialog UpgradeNagDialogInjector();
+    abstract UpgradeNagDialog upgradeNagDialogInjector();
 
     @FragmentScope
     @ContributesAndroidInjector(modules = DialogFragmentModule.class)

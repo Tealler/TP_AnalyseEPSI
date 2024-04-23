@@ -74,7 +74,7 @@ public class ShuttleApplication extends DaggerApplication {
 
     private RefWatcher refWatcher;
 
-    public HashMap<String, UserSelectedArtwork> userSelectedArtwork = new HashMap<>();
+    public Map<String, UserSelectedArtwork> userSelectedArtwork = new Map<>();
 
     private static Logger jaudioTaggerLogger1 = Logger.getLogger("org.jaudiotagger.audio");
     private static Logger jaudioTaggerLogger2 = Logger.getLogger("org.jaudiotagger");
@@ -217,8 +217,8 @@ public class ShuttleApplication extends DaggerApplication {
     public String getVersion() {
         try {
             return getPackageManager().getPackageInfo(getPackageName(), 0).versionName;
-        } catch (PackageManager.NameNotFoundException | NullPointerException ignored) {
-
+        } catch (PackageManager.NameNotFoundException e) {
+            Log.e(TAG, "Failed to get version name", e);
         }
         return "unknown";
     }

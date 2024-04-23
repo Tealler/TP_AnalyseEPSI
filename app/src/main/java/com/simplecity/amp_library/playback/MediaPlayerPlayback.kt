@@ -276,8 +276,6 @@ internal class MediaPlayerPlayback(context: Context) : LocalPlayback(context), M
                 callbacks?.onError(this, "Server died")
                 return true
             }
-            else -> {
-            }
         }
 
         callbacks?.onError(this, "Unknown error")
@@ -296,7 +294,10 @@ internal class MediaPlayerPlayback(context: Context) : LocalPlayback(context), M
     }
 
     override fun updateLastKnownStreamPosition() {
-
+        /* This function is empty because it is a placeholder for future implementation.
+         Currently, there is no specific functionality required for updating the last known stream position.
+         If functionality related to updating the last known stream position is added in the future,
+         it will be implemented within this function.*/
     }
 
     private fun createMediaPlayer(context: Context): MediaPlayer {

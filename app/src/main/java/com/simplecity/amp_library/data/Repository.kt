@@ -10,62 +10,10 @@ import io.reactivex.Observable
 
 interface Repository {
 
-    interface SongsRepository {
-
-        /**
-         * Returns a continuous List of all [Song]s, no filtering is applied.
-         */
-        fun getAllSongs(): Observable<List<Song>>
-
-        /**
-         * Returns a continuous List of [Song]s, excluding those which are blacklisted, podcasts, or not-whitelisted.
-         */
-        fun getSongs(predicate: ((Song) -> Boolean)? = null): Observable<List<Song>>
-
-        /**
-         * Returns a continuous List of [Song]s belonging to the given [Playlist], excluding those which are blacklisted, podcasts, or not-whitelisted.
-         */
-        fun getSongs(playlist: Playlist): Observable<List<Song>>
-
-        /**
-         * Returns a continuous List of [Song]s belonging to the given [Album], excluding those which are blacklisted, podcasts, or not-whitelisted.
-         */
-        fun getSongs(album: Album): Observable<List<Song>>
-
-        /**
-         * Returns a continuous List of [Song]s belonging to the given [AlbumArtist], excluding those which are blacklisted, podcasts, or not-whitelisted.
-         */
-        fun getSongs(albumArtist: AlbumArtist): Observable<List<Song>>
-
-        /**
-         * Returns a continuous List of [Song]s belonging to the given [Genre], excluding those which are blacklisted, podcasts, or not-whitelisted.
-         */
-        fun getSongs(genre: Genre): Observable<List<Song>>
-    }
-
-    interface AlbumsRepository {
-
-        /**
-         * Returns a continuous List of [Album]s
-         */
-        fun getAlbums(): Observable<List<Album>>
-    }
-
-    interface AlbumArtistsRepository {
-
-        /**
-         * Returns a continuous list of [AlbumArtist]s
-         */
-        fun getAlbumArtists(): Observable<List<AlbumArtist>>
-    }
-
-    interface GenresRepository {
-
-        /**
-         * Returns a continuous List of [Genre]s
-         */
-        fun getGenres(): Observable<List<Genre>>
-    }
+    typealias SongsRepository = ((predicate: ((Song) -> Boolean)?) -> Observable<List<Song>>)
+    typealias AlbumsRepository = () -> Observable<List<Album>>
+    typealias AlbumArtistsRepository = () -> Observable<List<AlbumArtist>>
+    typealias GenresRepository = () -> Observable<List<Genre>>
 
     interface PlaylistsRepository {
 

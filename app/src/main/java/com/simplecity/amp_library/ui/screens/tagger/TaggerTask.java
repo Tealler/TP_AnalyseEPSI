@@ -126,8 +126,7 @@ public class TaggerTask extends AsyncTask<Object, Integer, Boolean> {
 
                 File temp = null;
                 if (tagUpdate.hasChanged()) {
-
-                    if (TaggerUtils.requiresPermission(applicationContext, paths)) {
+                    if (requiresPermission && TaggerUtils.requiresPermission(applicationContext, paths)) {
                         temp = new File(applicationContext.getFilesDir(), orig.getName());
                         tempFiles.add(temp);
                         TaggerUtils.copyFile(orig, temp);
@@ -152,9 +151,7 @@ public class TaggerTask extends AsyncTask<Object, Integer, Boolean> {
                                 pfd.close();
                             }
                             if (temp.delete()) {
-                                if (tempFiles.contains(temp)) {
-                                    tempFiles.remove(temp);
-                                }
+                                tempFiles.remove(temp);
                             }
                         }
                     }
@@ -162,22 +159,24 @@ public class TaggerTask extends AsyncTask<Object, Integer, Boolean> {
 
                 publishProgress(i);
                 success = true;
-            } catch (CannotWriteException | IOException | CannotReadException | InvalidAudioFrameException | TagException | ReadOnlyFileException e) {
+            } catch (Exception e) {
                 e.printStackTrace();
-            } finally {
-                //Try to clean up our temp files
-                if (tempFiles != null && tempFiles.size() != 0) {
-                    for (int j = tempFiles.size() - 1; j >= 0; j--) {
-                        File file = tempFiles.get(j);
-                        file.delete();
-                        tempFiles.remove(j);
-                    }
-                }
             }
         }
 
+        cleanUpTempFiles();
         return success;
     }
+
+    private void cleanUpTempFiles() {
+        if (tempFiles != null && !tempFiles.isEmpty()) {
+            for (File file : tempFiles) {
+                file.delete();
+            }
+            tempFiles.clear();
+        }
+    }
+
 
     @Override
     protected void onPostExecute(Boolean success) {

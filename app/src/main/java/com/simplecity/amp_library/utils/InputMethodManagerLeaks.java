@@ -75,42 +75,56 @@ public class InputMethodManagerLeaks {
             try {
                 final Object lock = mHField.get(inputMethodManager);
                 if (lock == null) return;
-                // This is highly dependent on the InputMethodManager implementation.
-                synchronized (lock) {
-                    View servedView = (View) mServedViewField.get(inputMethodManager);
-                    if (servedView != null) {
 
-                        boolean servedViewAttached = servedView.getWindowVisibility() != View.GONE;
-
-                        if (servedViewAttached) {
-                            // The view held by the IMM was replaced without a global focus change. Let's make
-                            // sure we get notified when that view detaches.
-
-                            // Avoid double registration.
-                            servedView.removeOnAttachStateChangeListener(this);
-                            servedView.addOnAttachStateChangeListener(this);
-                        } else {
-                            // servedView is not attached. InputMethodManager is being stupid!
-                            Activity activity = extractActivity(servedView.getContext());
-                            if (activity == null || activity.getWindow() == null) {
-                                // Unlikely case. Let's finish the input anyways.
-                                finishInputLockedMethod.invoke(inputMethodManager);
-                            } else {
-                                View decorView = activity.getWindow().peekDecorView();
-                                boolean windowAttached = decorView.getWindowVisibility() != View.GONE;
-                                if (!windowAttached) {
-                                    finishInputLockedMethod.invoke(inputMethodManager);
-                                } else {
-                                    decorView.requestFocusFromTouch();
-                                }
-                            }
-                        }
-                    }
-                }
+                synchronizedInputMethodManagerLock(lock);
             } catch (Exception unexpected) {
                 Log.e("IMMLeaks", "Unexpected reflection exception", unexpected);
             }
         }
+
+        private void synchronizedInputMethodManagerLock(Object lock) throws IllegalAccessException, InvocationTargetException {
+            synchronized (lock) {
+                View servedView = (View) mServedViewField.get(inputMethodManager);
+                if (servedView != null) {
+                    handleServedView(servedView);
+                }
+            }
+        }
+
+        private void handleServedView(View servedView) throws IllegalAccessException, InvocationTargetException {
+            boolean servedViewAttached = servedView.getWindowVisibility() != View.GONE;
+
+            if (servedViewAttached) {
+                handleAttachedServedView(servedView);
+            } else {
+                handleDetachedServedView(servedView);
+            }
+        }
+
+        private void handleAttachedServedView(View servedView) {
+            servedView.removeOnAttachStateChangeListener(this);
+            servedView.addOnAttachStateChangeListener(this);
+        }
+
+        private void handleDetachedServedView(View servedView) throws IllegalAccessException, InvocationTargetException {
+            Activity activity = extractActivity(servedView.getContext());
+            if (activity == null || activity.getWindow() == null) {
+                finishInputLockedMethod.invoke(inputMethodManager);
+            } else {
+                handleDetachedActivity(activity);
+            }
+        }
+
+        private void handleDetachedActivity(Activity activity) throws IllegalAccessException, InvocationTargetException {
+            View decorView = activity.getWindow().peekDecorView();
+            boolean windowAttached = decorView.getWindowVisibility() != View.GONE;
+            if (!windowAttached) {
+                finishInputLockedMethod.invoke(inputMethodManager);
+            } else {
+                decorView.requestFocusFromTouch();
+            }
+        }
+
 
         private Activity extractActivity(Context context) {
             while (true) {

@@ -9,7 +9,7 @@ import com.simplecity.amp_library.BuildConfig;
 public class CustomArtworkTable extends SQLiteOpenHelper {
 
     public static final String AUTHORITY = BuildConfig.APPLICATION_ID + ".custom_artwork.contentprovider";
-    public static final Uri URI = Uri.parse("content://" + AUTHORITY + "/" + "custom_artwork");
+    public static final Uri URI = Uri.parse("content://" + AUTHORITY + "/" + TABLE_ARTIST_ART);
 
     public static final String TABLE_ARTIST_ART = "custom_artwork";
     public static final String COLUMN_ID = "_id";

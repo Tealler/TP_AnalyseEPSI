@@ -83,7 +83,6 @@ public final class CustomCollapsingTextHelper {
     private Typeface mCurrentTypeface;
     private CharSequence mText;
     private CharSequence mTextToDraw;
-    private boolean mIsRtl;
     private boolean mUseTexture;
     private Bitmap mExpandedTitleTexture;
     private Paint mTexturePaint;
@@ -96,7 +95,10 @@ public final class CustomCollapsingTextHelper {
     private Interpolator mPositionInterpolator;
     private Interpolator mTextSizeInterpolator;
 
-    private float mCollapsedShadowRadius, mCollapsedShadowDx, mCollapsedShadowDy;
+    private float mCollapsedShadowRadius;
+    private float mCollapsedShadowDx;
+    private float mCollapsedShadowDy;
+
     private int mCollapsedShadowColor;
 
     private float mExpandedShadowRadius, mExpandedShadowDx, mExpandedShadowDy;

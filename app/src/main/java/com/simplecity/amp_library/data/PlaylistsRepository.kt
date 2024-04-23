@@ -47,10 +47,14 @@ class PlaylistsRepository @Inject constructor(
         val defaultPlaylistsObservable = Observable.fromCallable<List<Playlist>> {
             val playlists = mutableListOf<Playlist>()
 
-            // Todo: Hide Podcasts if there are no songs
-            playlists.add(getPodcastPlaylist())
             playlists.add(getRecentlyAddedPlaylist())
             playlists.add(getMostPlayedPlaylist())
+
+            val podcastsPlaylist = getPodcastPlaylist()
+            val podcastSongs = songsRepository.getSongs(podcastsPlaylist).blockingFirst(emptyList())
+            if (podcastSongs.isNotEmpty()) {
+                playlists.add(podcastsPlaylist)
+            }
 
             playlists
         }.subscribeOn(Schedulers.io())
@@ -58,30 +62,28 @@ class PlaylistsRepository @Inject constructor(
         val playlistsObservable = getPlaylists()
 
         return Observable.combineLatest<List<Playlist>, List<Playlist>, MutableList<Playlist>>(
-            defaultPlaylistsObservable, playlistsObservable, BiFunction { defaultPlaylists: List<Playlist>, playlists1: List<Playlist> ->
-                val list = mutableListOf<Playlist>()
-                list.addAll(defaultPlaylists)
-                list.addAll(playlists1)
-                list
-            })
-            .concatMap { playlists ->
-                Observable.fromIterable<Playlist?>(playlists)
-                    .concatMap<Playlist> { playlist ->
-                        songsRepository.getSongs(playlist)
-                            .first(emptyList())
-                            .flatMapObservable { songs ->
-                                if (playlist.type != Type.USER_CREATED && playlist.type != Type.FAVORITES && songs.isEmpty()
-                                ) {
-                                    Observable.empty()
-                                } else {
-                                    Observable.just(playlist)
-                                }
+                defaultPlaylistsObservable, playlistsObservable, BiFunction { defaultPlaylists: List<Playlist>, playlists1: List<Playlist> ->
+            val list = mutableListOf<Playlist>()
+            list.addAll(defaultPlaylists)
+            list.addAll(playlists1)
+            list
+        })
+                .concatMap { playlists ->
+                    Observable.fromIterable<Playlist?>(playlists)
+                            .concatMap<Playlist> { playlist ->
+                                songsRepository.getSongs(playlist)
+                                        .first(emptyList())
+                                        .flatMapObservable { songs ->
+                                            if (playlist.type != Type.USER_CREATED && playlist.type != Type.FAVORITES && songs.isEmpty()) {
+                                                Observable.empty()
+                                            } else {
+                                                Observable.just(playlist)
+                                            }
+                                        }
                             }
-                    }
-                    .toList()
-                    .toObservable()
-            }
-
+                            .toList()
+                            .toObservable()
+                }
     }
 
     override fun deletePlaylist(playlist: Playlist) {
